@@ -1,22 +1,15 @@
 use core::fmt;
+use std::borrow::BorrowMut;
 
 #[derive(Clone, Copy)]
 pub struct Grid([Tile; 16]);
 
 #[derive(Copy, Clone)]
-enum Tile {
+pub enum Tile {
     Filled,
     Empty,
 }
-pub enum Tetromino {
-    I(Grid),
-    J(Grid),
-    L(Grid),
-    O(Grid),
-    S(Grid),
-    T(Grid),
-    Z(Grid),
-}
+pub struct Tetromino(Grid);
 
 impl Grid {
     pub fn new(positions: [(usize, usize); 4]) -> Self {
@@ -44,7 +37,7 @@ impl Default for Grid {
 }
 
 impl Grid {
-    pub fn transpose(&mut self) {
+    pub fn transpose(&mut self) -> &mut Self {
         // 0 1 2 3    4 5 6 7    8 9 10 11   12 13 14 15
         // 0 4 8 12   1 5 9 13   2 6 10 14   3  7  11 15
         //
@@ -61,13 +54,15 @@ impl Grid {
         grid.swap(6, 9);
         grid.swap(7, 13);
         grid.swap(11, 14);
+        self
     }
-    pub fn reverse(&mut self) {
+    pub fn reverse(&mut self) -> &mut Self {
         let grid = &mut self.0;
         grid.chunks_mut(4).for_each(|c| {
             c.swap(0, 3);
             c.swap(1, 2)
-        })
+        });
+        self
     }
 }
 
@@ -101,56 +96,39 @@ impl fmt::Display for Grid {
 #[allow(dead_code)]
 impl Tetromino {
     pub fn i() -> Self {
-        Tetromino::I(Grid::new([(0, 0), (1, 0), (2, 0), (3, 0)]))
+        Tetromino(Grid::new([(0, 0), (1, 0), (2, 0), (3, 0)]))
     }
     pub fn j() -> Self {
-        Tetromino::J(Grid::new([(3, 0), (3, 1), (2, 1), (1, 1)]))
+        Tetromino(Grid::new([(3, 0), (3, 1), (2, 1), (1, 1)]))
     }
     pub fn l() -> Self {
-        Tetromino::L(Grid::new([(1, 0), (2, 0), (3, 0), (3, 1)]))
+        Tetromino(Grid::new([(1, 0), (2, 0), (3, 0), (3, 1)]))
     }
     pub fn o() -> Self {
-        Tetromino::O(Grid::new([(2, 0), (3, 0), (2, 1), (3, 1)]))
+        Tetromino(Grid::new([(2, 0), (3, 0), (2, 1), (3, 1)]))
     }
     pub fn s() -> Self {
-        Tetromino::S(Grid::new([(3, 0), (2, 1), (3, 1), (2, 2)]))
+        Tetromino(Grid::new([(3, 0), (2, 1), (3, 1), (2, 2)]))
     }
     pub fn t() -> Self {
-        Tetromino::T(Grid::new([(3, 0), (2, 1), (3, 1), (3, 2)]))
+        Tetromino(Grid::new([(3, 0), (2, 1), (3, 1), (3, 2)]))
     }
     pub fn z() -> Self {
-        Tetromino::Z(Grid::new([(2, 0), (2, 1), (3, 1), (3, 2)]))
+        Tetromino(Grid::new([(2, 0), (2, 1), (3, 1), (3, 2)]))
     }
 
     pub fn grid_mut(&mut self) -> &mut Grid {
-        match self {
-            Tetromino::I(grid)
-            | Tetromino::J(grid)
-            | Tetromino::L(grid)
-            | Tetromino::O(grid)
-            | Tetromino::S(grid)
-            | Tetromino::T(grid)
-            | Tetromino::Z(grid) => grid,
-        }
+        self.0.borrow_mut()
     }
     pub fn grid(&self) -> &Grid {
-        match self {
-            Tetromino::I(grid)
-            | Tetromino::J(grid)
-            | Tetromino::L(grid)
-            | Tetromino::O(grid)
-            | Tetromino::S(grid)
-            | Tetromino::T(grid)
-            | Tetromino::Z(grid) => grid,
-        }
+        &self.0
     }
-    pub fn rotate_clockwise(&mut self) {
-        let grid: &mut Grid = self.grid_mut();
-        grid.transpose();
-        grid.reverse();
+    pub fn rotate_clockwise(&mut self) -> &mut Self {
+        self.grid_mut().transpose().reverse();
+        self
     }
-    pub fn rotate_anticlockwise(&mut self) {
-        let grid = self.grid_mut();
-        grid.transpose();
+    pub fn rotate_anticlockwise(&mut self) -> &mut Self {
+        self.grid_mut().transpose();
+        self
     }
 }
