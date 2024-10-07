@@ -1,13 +1,15 @@
 use core::fmt;
 use std::borrow::BorrowMut;
 
+
 #[derive(Clone, Copy)]
 pub struct Grid([Tile; 16]);
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq, Eq)]
 pub enum Tile {
     Filled,
     Empty,
+    Colided,
 }
 pub struct Tetromino(Grid);
 
@@ -21,6 +23,17 @@ impl Grid {
             grid.0[x * 4 + y] = Tile::Filled;
             grid
         })
+    }
+}
+
+impl From<Grid> for [Tile;16] {
+    fn from(value: Grid) -> Self {
+        value.0
+    }
+}
+impl <'a> From<&'a Grid> for &'a [Tile] {
+    fn from(value: &'a Grid) -> Self {
+        value.0.as_ref()
     }
 }
 
@@ -66,26 +79,27 @@ impl Grid {
     }
 }
 
-impl fmt::Display for Tile {
+impl fmt::Debug for Tile {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let text = match &self {
             Tile::Filled => 'X',
-            Tile::Empty => ' ',
+            Tile::Empty => '0',
+            Tile::Colided => 'C',
         };
         write!(f, "{}", text)
     }
 }
 
-impl fmt::Display for Tetromino {
+impl fmt::Debug for Tetromino {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.grid())
+        write!(f, "{:?}", self.grid())
     }
 }
 
-impl fmt::Display for Grid {
+impl fmt::Debug for Grid {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for (i, &c) in self.0.iter().enumerate() {
-            write!(f, "{}", c)?;
+            write!(f, "{:?}", c)?;
             if (i + 1) % 4 == 0 && i < 15 {
                 writeln!(f)?;
             }
