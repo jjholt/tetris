@@ -9,7 +9,6 @@ pub struct Grid([Tile; 16]);
 pub enum Tile {
     Filled,
     Empty,
-    Colided,
 }
 pub struct Tetromino(Grid);
 
@@ -83,8 +82,7 @@ impl fmt::Debug for Tile {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let text = match &self {
             Tile::Filled => 'X',
-            Tile::Empty => '0',
-            Tile::Colided => 'C',
+            Tile::Empty => 'o',
         };
         write!(f, "{}", text)
     }

@@ -7,7 +7,7 @@ fn main() {
     let mut game = Game::new();
     // println!("{:#?}", game);
     println!("Game Stats:\n{:?}", game.playfield());
-    for _ in 0..7 {
+    for _ in 0..12 {
         if game.check_colision() {
             game.new_tetromino(new_random_tetromino());
             println!("colision detected");
