@@ -3,7 +3,7 @@ use std::borrow::BorrowMut;
 
 
 #[derive(Clone, Copy)]
-pub struct Grid([Tile; 16]);
+pub struct Grid(pub [Tile; 16]);
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub enum Tile {

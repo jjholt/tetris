@@ -1,3 +1,5 @@
+use std::borrow::BorrowMut;
+
 use crate::{
     playfield::{Playfield, Position},
     tiles::{Tetromino, Tile},
@@ -60,26 +62,22 @@ impl Game {
     }
     // pub fn fall(&mut self) -> &mut Self {
     //     let (x, y) = (self.active_tile.position.0, self.active_tile.position.1);
-    //     let tiles: &[Tile] = self.active_tile.tetromino.grid().into();
-    //     tiles.chunks(4).enumerate().for_each(|(i, chunk)| {
+    //     let tiles: &mut [Tile] = self.active_tile.tetromino.grid_mut().0.borrow_mut(); // Utter
+    //                                                                                    // horse
+    //                                                                                    // shit
+    //     tiles.chunks_mut(4).enumerate().for_each(|(i, chunk)| {
     //         let new_x = (y + i + 1) * Playfield::COLS + x;
-    //         for (j, &tile) in chunk.iter().enumerate() {
-    //             let idx_playfield = new_x + j;
-    //
-    //             self.playfield.field[idx_playfield] = match (self.playfield.field[idx_playfield], tile) {
-    //                 (Tile::Empty, Tile::Empty) => Tile::Empty,
-    //                 (_,_) => Tile::Filled,
-    //                 // (Tile::Filled, Tile::Filled) => Tile::Filled,
-    //                 // (Tile::Filled, Tile::Empty) => Tile::Filled,
-    //                 // (Tile::Empty, Tile::Filled) => Tile::Filled,
+    //         self.playfield.field.iter_mut().skip(new_x).take(4).enumerate().for_each(|(j, f)| {
+    //             if f != &Tile::Filled {
+    //                 *f = chunk[j]
     //             }
-    //         }
-    //         // self.playfield.field[new_x..new_x + 4].copy_from_slice(chunk);
+    //         });
+    //         chunk.iter().for_each(|c| if c == &Tile::Filled {
+    //             let clear_x = y * Playfield::COLS + x;
+    //             self.playfield.field[clear_x..clear_x+ 4].copy_from_slice(&[Tile::Empty; 4]);
+    //         });
     //     });
-    //
     //     self.active_tile.position.1 += 1;
-    //     let clear_x = (y) * Playfield::COLS + x;
-    //     self.playfield.field[clear_x..clear_x + 4].copy_from_slice(&[Tile::Empty; 4]);
     //
     //     self
     // }
